@@ -1,8 +1,6 @@
 /**
  * Justin Robb
- * 1024715
  * 12/13/13
- * cse461 Final Project
  * Write data to a file
  */
 
