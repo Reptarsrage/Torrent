@@ -1,0 +1,45 @@
+Justin Robb
+1024715
+cse461 Final Project
+Project Information
+
+ 	For this project, I built torrent server and client programs. My final
+result contained almost all of my initial goals. One feature that I fell short
+on was connecting peers to each other. There were problems with NAT hole punching
+which I couldn't solve, therefore all peer connections are routed through the server.
+Other than that one hiccup my programs are robust and I haven't found a way to 
+corrupt the server or cause major malfunction. It was hard to test this though because
+I could not run many clients independently and examine the havoc they make. I did however
+check to make sure clients can connect to a server from local and remote addresses as
+long as the server is not behind a NAT, and that client failures are handled gracefully.
+	I utilize the header-payload system from class to communicate between client
+and server. The server sits, listening for connections until a client connects. The
+server then spawns a thread to handle the clients requests. The client can retrieve
+torrent files from the server, upload a file, or download a file from a list of 
+retrieved files. The uploaded files are not stored on the server, the server does 
+keep track of all its connected peers and what files each peer says they have. When 
+two peers connect to each other they do so through the server, which forwards packets 
+between them to simulate an actual p2p connection. When a client downloads a file, it 
+receives a list of peers from the server, then it assigns a chunk of the desired file 
+to each peer and waits for them so send the desired chunk. The client completes the 
+download (when all chunks are received) by writing the chunks to the file and then 
+adding itself as an uploader for that file.
+	Some interesting design decisions I made include using the server to simulate the 
+p2p connection. I also avoided using any UDP connections for the same reason, to avoid 
+NAT issues. Another design choice I had to make was opening up a listener for each client 
+whose sole purpose was to listen for requests for the server to open up a peer 
+connection. This couldn't be done by the main client thread because it happens in the 
+background. So the server keeps track of each client connection as well as the client's 
+listener connection. I use a timer to ack the server every so often in order to keep the 
+connection between server and client alive. Before this the server could not tell if a 
+client just failed without warning. I also decided to keep acking throughout a download 
+request because it can take longer to download a file than the server allows as a 
+reasonable timeout.
+
+Instructions for running:
+1. run command 'make'
+2. run command 'java Server' to start server (run with tag -help for usage)
+3. run command 'java Client' to start a client (run with tag -help for usage)
+4. run command 'make clean' when done
+
+
